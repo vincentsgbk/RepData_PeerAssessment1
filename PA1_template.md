@@ -63,7 +63,8 @@ qplot(interval, mean.steps., data = intervalSummary, ylab="Steps", main="Average
 ```r
 interval_max <- unlist(intervalSummary[which.max(intervalSummary$mean.steps.),1])
 ```
-Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps? Answer: **835**
+Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps? Answer: **835**  
+The plot tells that most average steps taken in the morning.  
 
 
 ## Imputing missing values
@@ -80,18 +81,18 @@ activity2 <- complete(imputedData,1) %>%
                 
 # summarize
 dailySteps2 <- group_by(activity2,date) %>%
-                summarize(sum(steps), mean(steps), median(steps))
-names(dailySteps2) = make.names(names(dailySteps2))
+                summarize(AverageSteps=sum(steps))
+
 # plot
-qplot(sum.steps., data = dailySteps2,ylab="Days")+geom_histogram()+stat_bin(bins=10)
+qplot(AverageSteps, data = dailySteps2,ylab="Days")+geom_histogram()+stat_bin(bins=10)
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-3-1.png)<!-- -->
 
 ```r
 # calc mean & median
-dailyMean <- mean(dailySteps2$sum.steps., na.rm=TRUE)
-dailyMedian <- median(dailySteps2$sum.steps., na.rm=TRUE)
+dailyMean <- mean(dailySteps2$AverageSteps, na.rm=TRUE)
+dailyMedian <- median(dailySteps2$AverageSteps, na.rm=TRUE)
 ```
 
 Calculate and report the total number of missing values in the dataset: **2304**  
@@ -107,10 +108,12 @@ activity2 <- mutate(activity2, Weekday =wday(date,label=T))
 activity2$Weekday <- sub("Sun|Sat", "Weekend", activity2$Weekday)
 activity2$Weekday <- sub("Mon|Tues|Wed|Thurs|Fri", "Weekday", activity2$Weekday)
 
-intervalSummary2 <- group_by(activity2,Weekday, interval) %>% summarize(mean(steps))
-names(intervalSummary2) = make.names(names(intervalSummary2))
-qplot(interval, mean.steps., data=intervalSummary2,facets=.~Weekday) + geom_line()
+intervalSummary2 <- group_by(activity2,Weekday, interval) %>% summarize(AverageSteps=mean(steps))
+qplot(interval, AverageSteps, data=intervalSummary2,facets=.~Weekday) + geom_line()
 ```
 
 ![](PA1_template_files/figure-html/unnamed-chunk-4-1.png)<!-- -->
 
+From the plots, it's abvious that:  
+* on weekdays: there is a peak at interval 835, which is about 8 O'Clock in the morning.  
+* on weekends: much more steps during day time, from 8AM till 8PM.  
